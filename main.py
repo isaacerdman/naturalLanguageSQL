@@ -1,6 +1,6 @@
 import argparse
 import psycopg2
-from psycopg2 import connect
+from chatGPT import ask_chatgpt
 
 
 def main():
@@ -8,11 +8,15 @@ def main():
 
     # Argument gets passed in as: """ -c="Your URL HERE" """
     parser.add_argument('-c', type=str, required=True,
-                        help='The database connection string')
+                        help='connection string for database')
+    parser.add_argument('-k', type=str, required=True,
+                        help='key for open ai')
 
     args = parser.parse_args()
     connectionString = args.c
-    print(connectionString)
+    openAiSecretKey = args.k
+
+    ask_chatgpt("Why is the sky blue?", openAiSecretKey)
 
     dropMenuTable = """
     DROP TABLE IF EXISTS Menu;
