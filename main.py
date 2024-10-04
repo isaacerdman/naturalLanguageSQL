@@ -56,20 +56,52 @@ def main():
     );
     """
 
-    insert_restaurants = """
+    insertRestaurants = """
       INSERT INTO Restaurants (name, cuisine)
       VALUES (%s, %s)
     """
 
-    default_restaurants = [
+    defaultRestaurants = [
         ("Olive Garden", "Italian"),
         ("Papa Johns", "American"),
         ("Taco Bell", "Mexican"),
         ("Bruges", "Belgian"),
         ("Del Taco", "Mexican"),
-        ("Buco De Peppo", "Italian"),
+        ("Buca De Beppo", "Italian"),
         ("Carls Jr", "Armerican"),
     ]
+
+    defaultFoodItems = [
+        ("Olive Pizza", "TRUE"), # 1 papa johns, Buca De Peppo
+        ("Spagetti", "FALSE"), # 2 Buca De Peppo
+        ("Taco", "FALSE"), # 3 Taco Bell, Del Taco
+        ("Chicken And Waffles", "FALSE"), # 4 Bruges
+        ("Potato taco", "FALSE"), # 5 Taco Bell
+        ("Burger", "FALSE"), # 6 Carls Jr
+        ("Impossible Burger", "FALSE"), # 7 Curls Jr
+        ("Tirimisu", "TRUE"), # 8 Buca De Peppo
+        ("Grilled Chicken Burrito", "TRUE"), # 9 Del Taco
+        ("Machine Gun Sandwich", "FALSE"),  # 10 Bruges
+        ("Soup", "True"),  # 11 Olive Garden
+    ]
+
+    defaultMenuTable = [
+        ("1", "2"), # Olive garden has spagetti
+        ("1", "11"), # Olive garden has soup
+        ("2", "1"), # Papa johns has olive pizza
+        ("3", "3"),
+        ("3", "5"),
+        ("4", "4"),
+        ("4", "10"),
+        ("5", "3"),
+        ("5", "9"),
+        ("6", "1"),
+        ("6", "8"),
+        ("7", "6"),
+        ("7", "7"),
+    ]
+
+
 
     with psycopg2.connect(connectionString) as conn:
         cursor = conn.cursor()
@@ -81,7 +113,7 @@ def main():
         cursor.execute(createFoodItemTable)
         cursor.execute(createRestaurantTable)
         cursor.execute(createMenuTable)
-        cursor.executemany(insert_restaurants, default_restaurants)
+        cursor.executemany(insertRestaurants, defaultRestaurants)
         cursor.execute("SELECT * FROM restaurants")
         result = cursor.fetchall()
         conn.commit()
