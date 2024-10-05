@@ -30,6 +30,13 @@ in proper PostgreSQL format. About 1/4 results caused the program to crash. We t
 asking AI again if the previously generated PostgreSQL statement was valid and to have it 
 edited if it was not. Once we implemented this we did not run into nearly as many issues.
 
+Another strategy that we tried was one-shot querying versus zero-shot querying. In some of our queries,
+particularly asking "Which restaurant offers the most high protein foods?", the program would
+almost always trip up crash on trying to generate a query. The generated query often referenced
+tables that did not exist. When we tried the one-shot approach however, the query did not try
+to reference tables that did not exist and the response politely conveyed that no information was
+available.
+
 ## Query that worked
 Question: If I were a vegetarian, which restaurant would you recommend I go to?
 
