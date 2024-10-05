@@ -16,8 +16,6 @@ def main():
     connectionString = args.c
     openAiSecretKey = args.k
 
-    print(ask_chatgpt("Why is the sky blue?", openAiSecretKey))
-
     dropMenuTable = """
     DROP TABLE IF EXISTS Menu;
     """
@@ -88,7 +86,7 @@ def main():
         ("Chicken And Waffles", "FALSE"), # 4 Bruges
         ("Potato taco", "TRUE"), # 5 Taco Bell
         ("Burger", "FALSE"), # 6 Carls Jr
-        ("Impossible Burger", "TRUE"), # 7 Curls Jr
+        ("Impossible Burger", "TRUE"), # 7 Carls Jr
         ("Tirimisu", "TRUE"), # 8 Buca De Peppo
         ("Grilled Chicken Burrito", "FALSE"), # 9 Del Taco
         ("Machine Gun Sandwich", "FALSE"),  # 10 Bruges
@@ -99,18 +97,17 @@ def main():
         ("1", "2"), # Olive garden has spagetti
         ("1", "11"), # Olive garden has soup
         ("2", "1"), # Papa johns has olive pizza
-        ("3", "3"),
-        ("3", "5"),
-        ("4", "4"),
-        ("4", "10"),
-        ("5", "3"),
-        ("5", "9"),
-        ("6", "1"),
-        ("6", "8"),
-        ("7", "6"),
-        ("7", "7"),
+        ("3", "3"), # Taco bell has taco
+        ("3", "5"), # Taco bell has potato taco
+        ("4", "4"), # Bruges Chicken and waffles
+        ("4", "10"), # Bruges Machine Gun Sandwich
+        ("5", "3"), # Del Taco has taco
+        ("5", "9"), # Del Taco has Grilled Chicken
+        ("6", "1"), # Buca has Olive Pizza
+        ("6", "8"), # Buca has Tirimisu
+        ("7", "6"), # Carls Jr has Burger
+        ("7", "7"), # Carls Jr has Impossible Burger
     ]
-
 
 
     with psycopg2.connect(connectionString) as conn:
@@ -126,12 +123,58 @@ def main():
         cursor.executemany(insertRestaurants, defaultRestaurants)
         cursor.executemany(insertFoodItems, defaultFoodItems)
         cursor.executemany(insertMenus, defaultMenuTable)
-        cursor.execute("SELECT * FROM Restaurants")
-        result = cursor.fetchall()
         conn.commit()
 
-    for row in result:
+        cursor.execute("SELECT * FROM Restaurants")
+        resultRestaurants = cursor.fetchall()
+
+        cursor.execute("SELECT * FROM FoodItem")
+        resultFoodItems = cursor.fetchall()
+
+        cursor.execute("SELECT * FROM Menu")
+        resultMenuItems = cursor.fetchall()
+
+    for row in resultRestaurants:
         print(row)
+
+    print("\n")
+
+    for row in resultFoodItems:
+        print(row)
+
+    print("\n")
+
+    for row in resultMenuItems:
+        print(row)
+
+    # prompt for a question
+    question = input("What is your question about the data base?")
+    schemaString = createFoodItemTable + "\n" + createMenuTable + "\n" + createRestaurantTable
+
+
+    # ask CHAT GPT
+    generatedSqlStatement = ask_chatgpt("Given the following schema information, return only a valid postgreSQL statement to query the database: " + schemaString + "\nHere is the question: " + question, openAiSecretKey)
+    generatedSqlStatementRevised = ask_chatgpt("I have this SQL statement, can I have it corrected to valid PostgreSQL syntax? Only return the SQL statement." + generatedSqlStatement, openAiSecretKey)
+    # Run the SQL query form Chat
+    print(generatedSqlStatementRevised)
+
+    with psycopg2.connect(connectionString) as conn:
+        cursor = conn.cursor()
+        cursor.execute(generatedSqlStatement)
+        queryResult = cursor.fetchall()
+
+    # capture results
+    response = ""
+    for row in queryResult:
+        response = response + "\n" + str(row)
+
+    # ask chat gpt to interpret results
+    friendlyResponse = ask_chatgpt("From this question: " + question + "\nInterpret the response in plain english: " + response, openAiSecretKey)
+
+    # Return to user
+    print(friendlyResponse)
+
+    print("\n")
 
 
 if __name__ == '__main__':
