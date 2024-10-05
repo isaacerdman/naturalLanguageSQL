@@ -11,12 +11,12 @@ def main():
                         help='connection string for database')
     parser.add_argument('-k', type=str, required=True,
                         help='key for open ai')
-
+    
     args = parser.parse_args()
     connectionString = args.c
     openAiSecretKey = args.k
 
-    ask_chatgpt("Why is the sky blue?", openAiSecretKey)
+    print(ask_chatgpt("Why is the sky blue?", openAiSecretKey))
 
     dropMenuTable = """
     DROP TABLE IF EXISTS Menu;
@@ -61,6 +61,16 @@ def main():
       VALUES (%s, %s)
     """
 
+    insertFoodItems = """
+      INSERT INTO FoodItem (name, vegetarian)
+      VALUES (%s, %s)
+    """
+
+    insertMenus = """
+      INSERT INTO Menu (restaurantId, foodId)
+      VALUES (%s, %s)
+    """
+
     defaultRestaurants = [
         ("Olive Garden", "Italian"),
         ("Papa Johns", "American"),
@@ -76,11 +86,11 @@ def main():
         ("Spagetti", "FALSE"), # 2 Buca De Peppo
         ("Taco", "FALSE"), # 3 Taco Bell, Del Taco
         ("Chicken And Waffles", "FALSE"), # 4 Bruges
-        ("Potato taco", "FALSE"), # 5 Taco Bell
+        ("Potato taco", "TRUE"), # 5 Taco Bell
         ("Burger", "FALSE"), # 6 Carls Jr
-        ("Impossible Burger", "FALSE"), # 7 Curls Jr
+        ("Impossible Burger", "TRUE"), # 7 Curls Jr
         ("Tirimisu", "TRUE"), # 8 Buca De Peppo
-        ("Grilled Chicken Burrito", "TRUE"), # 9 Del Taco
+        ("Grilled Chicken Burrito", "FALSE"), # 9 Del Taco
         ("Machine Gun Sandwich", "FALSE"),  # 10 Bruges
         ("Soup", "True"),  # 11 Olive Garden
     ]
@@ -114,7 +124,9 @@ def main():
         cursor.execute(createRestaurantTable)
         cursor.execute(createMenuTable)
         cursor.executemany(insertRestaurants, defaultRestaurants)
-        cursor.execute("SELECT * FROM restaurants")
+        cursor.executemany(insertFoodItems, defaultFoodItems)
+        cursor.executemany(insertMenus, defaultMenuTable)
+        cursor.execute("SELECT * FROM Restaurants")
         result = cursor.fetchall()
         conn.commit()
 
