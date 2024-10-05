@@ -136,31 +136,47 @@ def main():
         cursor.execute("SELECT * FROM Menu")
         resultMenuItems = cursor.fetchall()
 
-    for row in resultRestaurants:
-        print(row)
-
-    print("\n")
-
-    for row in resultFoodItems:
-        print(row)
-
-    print("\n")
-
-    for row in resultMenuItems:
-        print(row)
+    # for row in resultRestaurants:
+    #     print(row)
+    #
+    # print("\n")
+    #
+    # for row in resultFoodItems:
+    #     print(row)
+    #
+    # print("\n")
+    #
+    # for row in resultMenuItems:
+    #     print(row)
 
     # prompt for a question
     question = input("What is your question about the data base?")
     schemaString = createFoodItemTable + "\n" + createMenuTable + "\n" + createRestaurantTable
 
+    sampleSqlQuery = """SELECT r.name AS restaurant_name
+        FROM Restaurants r
+        WHERE r.restaurantId NOT IN (
+            SELECT m.restaurantId
+            FROM Menu m
+            JOIN FoodItem fi ON m.foodId = fi.foodId
+            WHERE fi.vegetarian = TRUE
+            GROUP BY m.restaurantId
+            HAVING COUNT(m.foodId) >= 2
+        );"""
+
 
     # ask CHAT GPT
-    generatedSqlStatement = ask_chatgpt("Given the following schema information, return only a valid postgreSQL statement to query the database: " + schemaString + "\nHere is the question: " + question, openAiSecretKey)
+    # One Shot
+    generatedSqlStatement = ask_chatgpt("Given the following schema information, return only a valid postgreSQL statement to query the database: " + schemaString + "\nHere is the question: " + question + "\nHere is a sample SQL Query: " + sampleSqlQuery, openAiSecretKey)
+    # Zero Shot
+    # generatedSqlStatement = ask_chatgpt("Given the following schema information, return only a valid postgreSQL statement to query the database: " + schemaString + "\nHere is the question: " + question, openAiSecretKey)
+
     generatedSqlStatementRevised = ask_chatgpt("I have this SQL statement, can I have it corrected to valid PostgreSQL syntax? Return only a valid postgreSQL statement to query the database: " + generatedSqlStatement, openAiSecretKey)
     # Run the SQL query form Chat
-    print(generatedSqlStatementRevised)
     if generatedSqlStatementRevised.__contains__("```"):
         generatedSqlStatementRevised = re.search(r'```sql\s*(.*?)\s*```', generatedSqlStatementRevised, re.DOTALL).group(1)
+
+    print(generatedSqlStatementRevised)
 
     with psycopg2.connect(connectionString) as conn:
         cursor = conn.cursor()
@@ -177,8 +193,6 @@ def main():
 
     # Return to user
     print(friendlyResponse)
-
-    print("\n")
 
 
 if __name__ == '__main__':
