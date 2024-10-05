@@ -11,7 +11,7 @@ def main():
                         help='connection string for database')
     parser.add_argument('-k', type=str, required=True,
                         help='key for open ai')
-
+    
     args = parser.parse_args()
     connectionString = args.c
     openAiSecretKey = args.k
