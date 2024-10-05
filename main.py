@@ -1,4 +1,6 @@
 import argparse
+import re
+
 import psycopg2
 from chatGPT import ask_chatgpt
 
@@ -154,13 +156,15 @@ def main():
 
     # ask CHAT GPT
     generatedSqlStatement = ask_chatgpt("Given the following schema information, return only a valid postgreSQL statement to query the database: " + schemaString + "\nHere is the question: " + question, openAiSecretKey)
-    generatedSqlStatementRevised = ask_chatgpt("I have this SQL statement, can I have it corrected to valid PostgreSQL syntax? Only return the SQL statement." + generatedSqlStatement, openAiSecretKey)
+    generatedSqlStatementRevised = ask_chatgpt("I have this SQL statement, can I have it corrected to valid PostgreSQL syntax? Return only a valid postgreSQL statement to query the database: " + generatedSqlStatement, openAiSecretKey)
     # Run the SQL query form Chat
     print(generatedSqlStatementRevised)
+    if generatedSqlStatementRevised.__contains__("```"):
+        generatedSqlStatementRevised = re.search(r'```sql\s*(.*?)\s*```', generatedSqlStatementRevised, re.DOTALL).group(1)
 
     with psycopg2.connect(connectionString) as conn:
         cursor = conn.cursor()
-        cursor.execute(generatedSqlStatement)
+        cursor.execute(generatedSqlStatementRevised)
         queryResult = cursor.fetchall()
 
     # capture results
@@ -169,7 +173,7 @@ def main():
         response = response + "\n" + str(row)
 
     # ask chat gpt to interpret results
-    friendlyResponse = ask_chatgpt("From this question: " + question + "\nInterpret the response in plain english: " + response, openAiSecretKey)
+    friendlyResponse = ask_chatgpt("From this question: " + question + "\nInterpret the response in plain english (If the response is nothing, tell me that): " + response, openAiSecretKey)
 
     # Return to user
     print(friendlyResponse)
