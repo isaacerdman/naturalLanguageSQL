@@ -76,11 +76,11 @@ def main():
         ("Spagetti", "FALSE"), # 2 Buca De Peppo
         ("Taco", "FALSE"), # 3 Taco Bell, Del Taco
         ("Chicken And Waffles", "FALSE"), # 4 Bruges
-        ("Potato taco", "FALSE"), # 5 Taco Bell
+        ("Potato taco", "TRUE"), # 5 Taco Bell
         ("Burger", "FALSE"), # 6 Carls Jr
-        ("Impossible Burger", "FALSE"), # 7 Curls Jr
+        ("Impossible Burger", "TRUE"), # 7 Curls Jr
         ("Tirimisu", "TRUE"), # 8 Buca De Peppo
-        ("Grilled Chicken Burrito", "TRUE"), # 9 Del Taco
+        ("Grilled Chicken Burrito", "FALSE"), # 9 Del Taco
         ("Machine Gun Sandwich", "FALSE"),  # 10 Bruges
         ("Soup", "True"),  # 11 Olive Garden
     ]
