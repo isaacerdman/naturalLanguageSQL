@@ -16,7 +16,7 @@ def main():
     connectionString = args.c
     openAiSecretKey = args.k
 
-    ask_chatgpt("Why is the sky blue?", openAiSecretKey)
+    print(ask_chatgpt("Why is the sky blue?", openAiSecretKey))
 
     dropMenuTable = """
     DROP TABLE IF EXISTS Menu;
@@ -58,6 +58,16 @@ def main():
 
     insertRestaurants = """
       INSERT INTO Restaurants (name, cuisine)
+      VALUES (%s, %s)
+    """
+
+    insertFoodItems = """
+      INSERT INTO FoodItem (name, vegetarian)
+      VALUES (%s, %s)
+    """
+
+    insertMenus = """
+      INSERT INTO Menu (restaurantId, foodId)
       VALUES (%s, %s)
     """
 
@@ -114,7 +124,9 @@ def main():
         cursor.execute(createRestaurantTable)
         cursor.execute(createMenuTable)
         cursor.executemany(insertRestaurants, defaultRestaurants)
-        cursor.execute("SELECT * FROM restaurants")
+        cursor.executemany(insertFoodItems, defaultFoodItems)
+        cursor.executemany(insertMenus, defaultMenuTable)
+        cursor.execute("SELECT * FROM Restaurants")
         result = cursor.fetchall()
         conn.commit()
 
