@@ -61,4 +61,4 @@ LIMIT 1;
 
 Friendly Response: (NA, the SELECT statement tried to come up with random data that wasn't in the database rather than interpreting food macros on its own)
 
-### [Other Queries](additional_queries.txt)
+### [Other Queries](additional_queries.md)
