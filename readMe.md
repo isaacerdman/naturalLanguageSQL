@@ -1,5 +1,7 @@
 # Natural Language AI SQL Project
 
+![schema](RestaurantDB.png)
+
 ## Purpose
 
 The purpose of this project is to integrate a basic database detailing restaurants and 
