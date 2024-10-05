@@ -1,4 +1,4 @@
-Which foods are served at Italian restaurants?
+### Which foods are served at Italian restaurants?
 ```
 SELECT FoodItem.name
 FROM FoodItem
@@ -9,14 +9,14 @@ WHERE Restaurants.cuisine = 'Italian';
 Italian restaurants typically serve spaghetti, soup, olive pizza, and tiramisu.
 
 
-How big is the menu at Olive Garden?
+### How big is the menu at Olive Garden?
 ```
 SELECT COUNT(foodId) FROM Menu WHERE restaurantId = (SELECT restaurantId FROM Restaurants WHERE name = 'Olive Garden');
 ```
 There are 2 items in the menu at Olive Garden.
 
 
-Which restaurant has the least amount of choices?
+### Which restaurant has the least amount of choices?
 ```
 SELECT r.name AS restaurant_name 
 FROM Restaurants r 
@@ -28,7 +28,7 @@ LIMIT 1;
 The restaurant with the least amount of choices is "Papa John's" with only 1 food item on its menu.
 
 
-Who is the head chef at olive garden?
+### Who is the head chef at olive garden?
 ```
 SELECT name
 FROM FoodItem;
@@ -36,7 +36,7 @@ FROM FoodItem;
 The response does not provide any information on who the head chef at Olive Garden is.
 
 
-Are there more Italian or Belgian restaurants?
+### Are there more Italian or Belgian restaurants?
 ```
 SELECT cuisine, COUNT(restaurantId) AS num_restaurants
 FROM Restaurants
@@ -46,7 +46,7 @@ GROUP BY cuisine;
 There are more Italian restaurants than Belgian restaurants.
 
 
-Which restaurants don't serve 2 or more vegetarian options?
+### Which restaurants don't serve 2 or more vegetarian options?
 ```
 SELECT r.name AS restaurant_name
 FROM Restaurants r
